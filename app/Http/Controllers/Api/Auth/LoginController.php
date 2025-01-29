@@ -41,10 +41,10 @@ class LoginController extends Controller
 
 
             $images = [
-                "fb" => asset("images/quick/facebook.svg"),
-                "ig" => asset("images/quick/instagram.svg"),
-                "tg" => asset("images/quick/telegram.svg"),
-                "wa" => asset("images/quick/whatsapp.svg")
+                "fb" => asset("public/assets/images/quick/facebook.svg"),
+                "ig" => asset("public/assets/images/quick/instagram.svg"),
+                "tg" => asset("public/assets/images/quick/telegram.svg"),
+                "wa" => asset("public/assets/images/quick/whatsapp.svg")
             ];
 
             foreach ($filteredData as $key => &$service) {
