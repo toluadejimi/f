@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -22,11 +23,14 @@ use App\Http\Controllers\HomeController;
 Route::post('login',  [LoginController::class,'login']);
 Route::post('register',  [RegisterController::class,'register']);
 Route::post('reset-password',  [RegisterController::class,'reset_password']);
+Route::post('logout',  [UserController::class,'logout']);
+Route::any('woven/callback',  [UserController::class,'webhook']);
 
 
+Route::group(['middleware' => ['auth:api', 'Acess']], function () {
 
-Route::group(['middleware' => 'auth'], function () {
-
+    Route::get('get-user',  [UserController::class,'get_user']);
+    Route::post('fund-wallet',  [UserController::class,'fund_wallet']);
 
 
 });

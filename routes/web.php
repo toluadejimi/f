@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\WorldNumberController;
@@ -40,6 +41,7 @@ Route::get('/clear2', function() {
 Route::any('getInitialCountdown',  [HomeController::class,'getInitialCountdown']);
 
 
+Route::post('logout',  [UserController::class,'logout']);
 
 
 

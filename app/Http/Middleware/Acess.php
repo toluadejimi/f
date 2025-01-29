@@ -20,14 +20,13 @@ class Acess
     public function handle(Request $request, Closure $next)
     {
 
-
         if($request->header('Authorization') == 'Bearer '.$request->bearerToken() )
         {
 
             return $next($request);
 
-        }elseif($request->header('Authorization') != 'Bearer '.$request->bearerToken() ){
 
+        }elseif($request->header('Authorization') != 'Bearer '.$request->bearerToken() ){
 
             abort(response()->json(
                 [
@@ -37,6 +36,7 @@ class Acess
                 ], 401));
 
         }elseif (Auth::guard('api')->check() != true) {
+
             abort(response()->json(
                 [
                     'status' => false,

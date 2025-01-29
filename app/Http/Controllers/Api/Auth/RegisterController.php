@@ -39,6 +39,7 @@ class RegisterController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($validatedData['password']),
+            'device_id' => $request->device_id,
         ]);
 
 

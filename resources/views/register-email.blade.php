@@ -444,8 +444,10 @@
             <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
                     <td class="email-masthead">
-                        <img loading="lazy" srcset="https://i.postimg.cc/T18SnGvp/logo.png" class="aspect-[3.35] object-contain object-center w-[201px] overflow-hidden self-center max-w-full mt-2" />
-                        </a>
+
+                        <img src="{{url('')}}/public/assets/images/logo.svg">
+
+
                     </td>
                 </tr>
                 <!-- Email Body -->

@@ -444,7 +444,9 @@
           <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
             <tr>
               <td class="email-masthead">
+
                   <img src="{{url('')}}/public/assets/images/logo.svg">
+
               </td>
             </tr>
             <!-- Email Body -->
@@ -456,32 +458,8 @@
                     <td class="content-cell">
                       <div class="f-fallback">
                         <h1>Hi {{$data1['user']}},</h1>
-                        <p>We need to verify your email, Click the link below to continue <br> <strong>This verification link is only valid for the next 24 hours.</strong></p>
-                        <!-- Action -->
-                        <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                            <td align="center">
-                              <!-- Border based button
-                              https://litmus.com/blog/a-guide-to-bulletproof-buttons-in-email-design -->
-                              <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
-                                <tr>
-                                  <td align="center">
-                                    <a href="{{$data1['url']}}" class="f-fallback button button--red" target="_blank">Verify your account</a>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                        <!-- Sub copy -->
-                        <table class="body-sub" role="presentation">
-                          <tr>
-                            <td>
-                              <p class="f-fallback sub">If you’re having trouble with the button above, copy and paste the URL below into your web browser.</p>
-                              <p class="f-fallback sub">{{$data1['url']}}</p>
-                            </td>
-                          </tr>
-                        </table>
+                        <p>We want to inform you that NGN {{$data1['amount']}} has been funded to your Figosms main wallet<br></p>
+
                       </div>
                     </td>
                   </tr>

@@ -2,6 +2,7 @@
 
 use App\Constants\Status;
 use App\Models\Extension;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Verification;
@@ -46,6 +47,153 @@ function resolve_complete($order_id)
     }
 }
 
+function sendcreditmail($email,$amount,$username,$subject )
+{
+
+
+    $data = array(
+        'fromsender' => env('MAIL_FROM_ADDRESS'), 'FIGO SMS',
+        'subject' => $subject,
+        'toreceiver' => $email,
+        'user' => $username,
+        'amount' => $amount,
+    );
+
+    Mail::send('credit-mail', ["data1" => $data], function ($message) use ($data) {
+        $message->from($data['fromsender']);
+        $message->to($data['toreceiver']);
+        $message->subject($data['subject']);
+    });
+
+
+
+
+}
+
+function sendNotificationToHttp(array|null $data): bool|string|null
+{
+
+    $get_key = Setting::where('key_name','server_key')->first()->value;
+    $key = json_decode($get_key, false);
+
+    $url = 'https://fcm.googleapis.com/v1/projects/' . $key->project_id . '/messages:send';
+    $headers = [
+        'Authorization' => 'Bearer ' . getAccessToken($key),
+        'Content-Type' => 'application/json',
+    ];
+    try {
+        return Http::withHeaders($headers)->post($url, $data);
+
+
+    } catch (\Exception $exception) {
+        return false;
+    }
+}
+
+
+function sendDeviceNotification($device_id, $message)
+{
+
+
+    $postData = [
+        'message' => [
+            'token' => $device_id,
+            'data' => [
+                "message" => "$message",
+                "sound" => "notification.wav",
+                "android_channel_id" => "hexa-ride"
+            ],
+            'notification' => [
+                "title" => "Incoming Transfer",
+                "body" => $message,
+            ]
+        ]
+    ];
+
+    return sendNotificationToHttp($postData);
+
+}
+
+
+function getAccessToken($key): string
+{
+    $jwtToken = [
+        'iss' => $key->client_email,
+        'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+        'aud' => 'https://oauth2.googleapis.com/token',
+        'exp' => time() + 3600,
+        'iat' => time(),
+    ];
+    $jwtHeader = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
+    $jwtPayload = base64_encode(json_encode($jwtToken));
+    $unsignedJwt = $jwtHeader . '.' . $jwtPayload;
+    openssl_sign($unsignedJwt, $signature, $key->private_key, OPENSSL_ALGO_SHA256);
+    $jwt = $unsignedJwt . '.' . base64_encode($signature);
+
+    $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+        'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        'assertion' => $jwt,
+    ]);
+    return $response->json('access_token');
+}
+
+
+function woven_create($amtt, $code, $last_name, $tremail, $phone)
+{
+
+
+    if($code == "090110"){
+        $bank_name = "VFD";
+    }elseif ($code == "000017"){
+        $bank_name = "WEMA";
+    }else{
+        $bank_name = "CORONATION MERVHANT BANK";
+    }
+
+
+    $key = env('WOVENKEY');
+    $databody = array(
+        "amount" => $amtt,
+        "collection_bank" => $code,
+        "callback_url" => url('') . "/api/woven/callback",
+
+    );
+
+    $post_data = json_encode($databody);
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.woven.finance/v2/api/nuban/dynamic',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $post_data,
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            "api_secret: $key"
+        ),
+    ));
+
+    $var = curl_exec($curl);
+    curl_close($curl);
+    $var = json_decode($var);
+    $status = $var->message ?? null;
+
+
+
+    if ($status == "The process was completed successfully") {
+        $data['account_no'] = $var->data->vnuban;
+        $data['bank_name'] = $bank_name;
+        $data['account_name'] = "WOV CHECKOUT";
+        return $data;
+    }
+
+
+}
 
 function send_notification($message)
 {
@@ -53,7 +201,7 @@ function send_notification($message)
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.telegram.org/bot7592678907:AAH4Eu7NbRiClgyTbvr5tS6XhATpZwt0JrQ/sendMessage?chat_id=1316552414',
+            CURLOPT_URL => '#',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -80,7 +228,7 @@ function send_notification2($message)
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.telegram.org/bot7158474563:AAGGy_0ZGUV_vZbagi3V1MvMuleMLpUseEc/sendMessage?chat_id=7109127373',
+            CURLOPT_URL => '#',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
