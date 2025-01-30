@@ -55,7 +55,7 @@ class RegisterController extends Controller
             ]);
 
             $data = array(
-                'fromsender' => 'noreply@enkpay.com', 'FIGO SMS',
+                'fromsender' => 'noreply@figosms.com', 'FIGO SMS',
                 'subject' => "New Registration ",
                 'toreceiver' => $email,
                 'url' => $url,
@@ -115,7 +115,7 @@ class RegisterController extends Controller
             ]);
 
             $data = array(
-                'fromsender' => 'noreply@enkpay.com', 'FIGO SMS',
+                'fromsender' => 'noreply@figosms.com', 'FIGO SMS',
                 'subject' => "Reset Password ",
                 'toreceiver' => $email,
                 'url' => $url,

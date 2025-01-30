@@ -328,36 +328,6 @@ function get_services(){
 
 function create_order($service, $price, $cost, $service_name, $costs){
 
-    if (Auth::user()->wallet < $price) {
-        return 8;
-    }
-
-    if (Auth::user()->wallet < $price) {
-        return 8;
-    }
-
-
-    if (Auth::user()->wallet < $price) {
-        return 8;
-    }
-
-
-
-
-
-
-    $total_funded = Transaction::where('user_id', Auth::id())->where('status', 2)->sum('amount');
-    $total_bought = verification::where('user_id', Auth::id())->where('status', 2)->sum('cost');
-    if ($total_bought > $total_funded) {
-        $message = Auth::user()->email . " needs to be watched";
-        send_notification($message);
-        send_notification2($message);
-        return 7;
-    }
-
-    $currentTime = Carbon::now();
-    $futureTime = $currentTime->addMinutes(20);
-    $formattedTime = $futureTime->format('Y-m-d H:i:s');
 
 
     $APIKEY = env('KEY');
@@ -380,10 +350,6 @@ function create_order($service, $price, $cost, $service_name, $costs){
 
     if(strstr($result, "ACCESS_NUMBER") !== false) {
 
-
-        if (Auth::user()->wallet < $price) {
-            return 8;
-        }
 
         $parts = explode(":", $result);
         $accessNumber = $parts[0];
@@ -408,22 +374,16 @@ function create_order($service, $price, $cost, $service_name, $costs){
 
         User::where('id', Auth::id())->decrement('wallet', $costs);
 
-        User::where('id', Auth::id())->increment('hold_wallet', $costs);
-
-
-        $cost2 = number_format($price, 2);
-        $cal = Auth::user()->wallet - $costs;
-        $bal = number_format($cal, 2);
-        $message = Auth::user()->email." just been ordered number on Diasy NGN $cost2 | NGN $bal ";
-        send_notification($message);
-        send_notification2($message);
-
-        return 1;
+        $data['id'] = $ver->id;
+        $data['status'] = 1;
+        return $data;
 
     }elseif($result == "MAX_PRICE_EXCEEDED" || $result == "NO_NUMBERS" || $result == "TOO_MANY_ACTIVE_RENTALS" || $result == "NO_MONEY") {
-        return 0;
+        $data['status'] = 0;
+        return $data;
     }else{
-        return 0;
+        $data['status'] = 0;
+        return $data;
     }
 
 
@@ -930,20 +890,15 @@ function get_d_price($service){
 
 
     foreach($var as $key => $value){
-
         $service2['data'] =  $value;
-
     }
 
-    $result = $service2["data"]->$service->cost;
+
+    $data['cost'] = $service2["data"]->$service->cost;
+    $data['name'] = $service2["data"]->$service->name;
 
 
-
-
-
-    $result = $service2["name"]->$service->cost;
-
-    return $result;
+    return $data;
 
 }
 

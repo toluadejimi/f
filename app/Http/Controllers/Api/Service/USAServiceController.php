@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Service;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
 use App\Models\Setting;
 use App\Models\Transaction;
 use App\Models\Verification;
@@ -49,7 +50,10 @@ class USAServiceController extends Controller
 
         $service = $request->service;
         $gcost = get_d_price($service);
-        $costs = ($get_rate_us * $gcost) + $margin_us;
+
+        $costs = ($get_rate_us * $gcost['cost']) + $margin_us;
+
+
 
         if($request->wallet == "main_wallet"){
             $wallet = Auth::user()->wallet;
@@ -61,7 +65,7 @@ class USAServiceController extends Controller
         if ($wallet < $costs) {
 
             return response()->json([
-                'status' => true,
+                'status' => false,
                 'message' => "Insufficient Funds"
             ],422);
 
@@ -69,47 +73,42 @@ class USAServiceController extends Controller
 
 
         $service = $request->service;
-        $price = $request->price;
-        $cost = $request->cost;
-        $service_name = $request->name;
+        $price = $costs;
+        $cost = $gcost['cost'];
+        $service_name = $gcost['name'];
 
 
 
         $order = create_order($service, $price, $cost, $service_name, $costs);
-        if ($order == 8) {
-            return back()->with('error', "Insufficient Funds");
-        }
 
-        if ($order == 7) {
-            return back()->with('error', "Kindly Fund your wallet");
-        }
-
-        if ($order == 8) {
-            return back()->with('error', "Insufficient Funds");
-        }
-
-        if ($order == 8) {
-            return back()->with('error', "Insufficient Funds");
-        }
-
-
-        //dd($order);
-
-        if ($order == 9) {
-
-            $ver = Verification::where('status', 1)->first() ?? null;
-            if ($ver != null) {
-                return redirect('us');
-            }
-            return redirect('us');
-        }
-
-        if ($order == 0) {
+        if ($order['status'] == 0) {
             return redirect('home')->with('error', 'Number Currently out of stock, Please check back later');
         }
 
+        if ($order['status'] == 1) {
 
-        if ($order == 1) {
+            $order = Verification::where('id', $order['id'])->first() ?? null;
+            $image = Image::where('id', $order->service)->first()->url ?? null;
+
+            $data['service'] = $order->service;
+            $data['country'] = "USA";
+            $data['status'] = $order->status;
+            $data['image'] = $image;
+
+
+
+
+
+
+            return response()->json([
+                'status' => true,
+                'message' => "Insufficient Funds"
+            ],200);
+
+        }
+
+
+        if ($order['status'] == 1) {
             return redirect('orders');
         }
     }
