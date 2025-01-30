@@ -372,6 +372,7 @@ function create_order($service, $price, $cost, $service_name, $costs){
         $ver->type = 1;
         $ver->save();
 
+
         User::where('id', Auth::id())->decrement('wallet', $costs);
 
         $data['id'] = $ver->id;

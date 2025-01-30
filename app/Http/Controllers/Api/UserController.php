@@ -98,6 +98,17 @@ class UserController extends Controller
         $trx->save();
 
 
+        $ref = "FIG".random_int(000000, 999999);
+        $data = new Transaction();
+        $data->user_id = Auth::id();
+        $data->amount = $request->amount;
+        $data->ref_id = $ref;
+        $data->trx_id = $woven_details['account_no'];
+        $data->type = 2;
+        $data->status = 0;
+        $data->save();
+
+
         return response()->json([
             'status' => true,
             'account_no' => $woven_details['account_no'],
@@ -180,6 +191,8 @@ class UserController extends Controller
         $user_id = VAccount::where('account_no', $acc_no)->first()->user_id ?? null;
         if($user_id != null){
             User::where('id', $user_id)->increment('wallet', $ramount);
+            Transaction::where('trx_id', $acc_no)->update(['status' => 2]);
+
             $user = User::where('id', $user_id)->first();
             $message = "$ramount has been funded to your main wallet";
             sendDeviceNotification($user->device_id, $message );
