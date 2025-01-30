@@ -5,12 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\Transaction;
-use App\Models\Transactioncheck;
-use App\Models\Transfertransaction;
 use App\Models\User;
 use App\Models\VAccount;
-use App\Models\Webkey;
-use App\Models\Webtransfer;
 use Faker\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -125,7 +121,6 @@ class UserController extends Controller
 
         public function webhook(Request $request){
 
-
         $ip = $request->ip();
         $message = $ip. "====>".json_encode($request->all());
         send_notification($message);
@@ -173,7 +168,6 @@ class UserController extends Controller
         }
 
         VAccount::where('account_no', $acc_no)->update(['status' => 4]);
-
         if($user_amount > 11000){
             if ($request->amount > 11000) {
                 $ramount = $request->amount - 300;
@@ -197,9 +191,10 @@ class UserController extends Controller
 
         }
 
-
-
-
+            return response()->json([
+                'status' => true,
+                'message' => "Transaction Successful",
+            ]);
 
     }
 

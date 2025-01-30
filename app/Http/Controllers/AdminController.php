@@ -436,9 +436,11 @@ class AdminController extends Controller
 
         $message = $email . "| Manual Payment  Approved |  NGN " . number_format($request->amount) . " | on ACEVERIFY";
         send_notification2($message);
+
         return back()->with('message', 'Transaction added successfully');
 
     }
+
 
     public
     function delete_payment(request $request)
