@@ -928,6 +928,7 @@ function get_d_price($service){
     $var = json_decode($var);
 
 
+
     foreach($var as $key => $value){
 
         $service2['data'] =  $value;
@@ -935,6 +936,13 @@ function get_d_price($service){
     }
 
     $result = $service2["data"]->$service->cost;
+
+
+
+
+
+    $result = $service2["name"]->$service->cost;
+
     return $result;
 
 }

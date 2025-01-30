@@ -42,17 +42,29 @@ class USAServiceController extends Controller
     public function order_usa_number(Request $request)
     {
 
-        $data['get_rate'] = Setting::where('id', 1)->first()->rate;
-        $data['margin'] = Setting::where('id', 1)->first()->margin;
+        $setting = Setting::where('id', 1)->firstOrFail();
+        $get_rate_us = $setting->get_rate_us;
+        $margin_us = $setting->margin_us;
 
 
         $service = $request->service;
-
         $gcost = get_d_price($service);
+        $costs = ($get_rate_us * $gcost) + $margin_us;
 
-        $costs = ($data['get_rate'] * $gcost) + $data['margin'];
-        if (Auth::user()->wallet < $costs) {
-            return back()->with('error', "Insufficient Funds");
+        if($request->wallet == "main_wallet"){
+            $wallet = Auth::user()->wallet;
+        }else{
+            $wallet = Auth::user()->bonus_wallet;
+        }
+
+
+        if ($wallet < $costs) {
+
+            return response()->json([
+                'status' => true,
+                'message' => "Insufficient Funds"
+            ],422);
+
         }
 
 
@@ -60,6 +72,8 @@ class USAServiceController extends Controller
         $price = $request->price;
         $cost = $request->cost;
         $service_name = $request->name;
+
+
 
         $order = create_order($service, $price, $cost, $service_name, $costs);
         if ($order == 8) {

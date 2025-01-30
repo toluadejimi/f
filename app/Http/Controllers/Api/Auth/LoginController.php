@@ -59,11 +59,18 @@ class LoginController extends Controller
             $data['quick_services'] = $filteredData;
             $data['transactions'] = $transactions;
 
-            return response()->json(['data' => $data], 200);
+            return response()->json([
+                'status' => true,
+                'data' => $data,
+
+            ], 200);
 
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid credentials'
+        ], 401);
     }
 
 
