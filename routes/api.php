@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Service\OrderController;
 use App\Http\Controllers\Api\Service\USAServiceController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -34,6 +35,8 @@ Route::group(['middleware' => ['auth:api', 'Acess']], function () {
     Route::post('fund-wallet',  [UserController::class,'fund_wallet']);
     Route::get('get-usa-services',  [USAServiceController::class,'get_usa_services']);
     Route::post('order-usa-number',  [USAServiceController::class,'order_usa_number']);
+    Route::any('all-orders',  [OrderController::class,'all_orders']);
+    Route::post('delete-order',  [OrderController::class,'delete_orders']);
 
 
 

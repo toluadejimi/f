@@ -363,12 +363,11 @@ function create_order($service, $price, $cost, $service_name, $costs){
         $ver->user_id = Auth::id();
         $ver->phone = $phone;
         $ver->order_id = $id;
-        $ver->country = "US";
+        $ver->country = "USA";
         $ver->service = $service_name;
         $ver->cost = $price;
         $ver->api_cost = $cost;
-        $ver->status = 1;
-        $ver->expires_in = 300;
+        $ver->status = 0;
         $ver->type = 1;
         $ver->save();
 
@@ -425,8 +424,6 @@ function cancel_order($orderID){
 }
 
 function check_sms($orderID){
-
-
 
    $APIKEY = env('KEY');
    $curl = curl_init();

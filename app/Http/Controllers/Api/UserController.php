@@ -89,7 +89,6 @@ class UserController extends Controller
         $code = Setting::where('id', 1)->first()->woven_collective_code;
         $woven_details = woven_create($amtt, $code, $last_name, $tremail, $phone);
 
-
         $trx = new VAccount();
         $trx->account_no = $woven_details['account_no'];
         $trx->account_name = $woven_details['account_name'];
@@ -98,7 +97,7 @@ class UserController extends Controller
         $trx->save();
 
 
-        $ref = "FIG".random_int(000000, 999999);
+        $ref = "FIG".random_int(000000000, 999999999);
         $data = new Transaction();
         $data->user_id = Auth::id();
         $data->amount = $request->amount;

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Api\Service;
 
 use App\Http\Controllers\Controller;
-use App\Models\Image;
 use App\Models\Setting;
-use App\Models\Transaction;
 use App\Models\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,10 +52,9 @@ class USAServiceController extends Controller
         $costs = ($get_rate_us * $gcost['cost']) + $margin_us;
 
 
-
-        if($request->wallet == "main_wallet"){
+        if ($request->wallet == "main_wallet") {
             $wallet = Auth::user()->wallet;
-        }else{
+        } else {
             $wallet = Auth::user()->bonus_wallet;
         }
 
@@ -67,7 +64,7 @@ class USAServiceController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => "Insufficient Funds"
-            ],422);
+            ], 422);
 
         }
 
@@ -78,39 +75,25 @@ class USAServiceController extends Controller
         $service_name = $gcost['name'];
 
 
-
         $order = create_order($service, $price, $cost, $service_name, $costs);
 
         if ($order['status'] == 0) {
-            return redirect('home')->with('error', 'Number Currently out of stock, Please check back later');
-        }
+            return response()->json([
+                'status' => false,
+                'message' => "Service not available at the moment"
+            ], 422);        }
 
         if ($order['status'] == 1) {
 
-            $order = Verification::where('id', $order['id'])->first() ?? null;
-            $image = Image::where('id', $order->service)->first()->url ?? null;
-
-            $data['service'] = $order->service;
-            $data['country'] = "USA";
-            $data['status'] = $order->status;
-            $data['image'] = $image;
-
-
-
-
-
+            $orders = Verification::latest()->where('user_id', Auth::id())->take(50)->get()->makeHidden(['expires_in', 'updated_at', 'exp']);
 
             return response()->json([
                 'status' => true,
-                'message' => "Insufficient Funds"
-            ],200);
+                'data' => $orders
+            ], 200);
 
         }
 
-
-        if ($order['status'] == 1) {
-            return redirect('orders');
-        }
     }
 
 
