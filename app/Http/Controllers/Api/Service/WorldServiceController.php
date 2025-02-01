@@ -77,7 +77,14 @@ class WorldServiceController extends Controller
         $gcost = pool_cost($request->service, $request->service);
         $ngnprice = ($get_rate * $gcost['cost']) + $margin;
 
-        if (Auth::user()->wallet < $ngnprice) {
+
+        if ($request->wallet == "main_wallet") {
+            $wallet = Auth::user()->wallet;
+        } else {
+            $wallet = Auth::user()->bonus_wallet;
+        }
+
+        if ($wallet < $ngnprice) {
             return response()->json([
                 'status' => true,
                 'message' => "Insufficient Funds"
