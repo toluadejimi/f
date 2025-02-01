@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Service\OrderController;
 use App\Http\Controllers\Api\Service\USAServiceController;
+use App\Http\Controllers\Api\Service\WorldServiceController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,17 @@ Route::group(['middleware' => ['auth:api', 'Acess']], function () {
     Route::post('order-usa-number',  [USAServiceController::class,'order_usa_number']);
     Route::any('all-orders',  [OrderController::class,'all_orders']);
     Route::post('delete-order',  [OrderController::class,'delete_orders']);
+    Route::post('change-password',  [LoginController::class,'change_password']);
+
+
+
+    //word
+    Route::get('get-countries',  [WorldServiceController::class,'get_world_country']);
+    Route::get('get-services',  [WorldServiceController::class,'get_world_services']);
+    Route::post('check-availability',  [WorldServiceController::class,'check_av']);
+    Route::post('order-world-service',  [WorldServiceController::class,'order_world_service']);
+
+
 
 
 

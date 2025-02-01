@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Passport;
 
@@ -74,5 +75,25 @@ class LoginController extends Controller
     }
 
 
+
+    public function change_password(Request $request)
+    {
+
+        if($request->password != $request->password_confirmation){
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Incorrect Password'
+            ], 422);
+        }
+
+        User::where('id', Auth::id())->update(['password' => Hash::make($request->password)]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Password changed successfully'
+        ], 200);
+
+
+    }
 
 }

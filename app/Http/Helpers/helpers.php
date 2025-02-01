@@ -589,17 +589,8 @@ function get_world_services(){
 }
 
 
-function create_world_order($country, $service, $price, $calculatrdcost){
+function create_world_order($country, $service, $price, $country_name, $service_name){
 
-
-
-    $total_funded = Transaction::where('user_id', Auth::id())->where('status', 2)->sum('amount');
-    $total_bought = verification::where('user_id', Auth::id())->where('status', 2)->sum('cost');
-    if ($total_bought > $total_funded) {
-        $message = Auth::user()->email . " need to be checked";
-        return 7;
-
-    }
 
     $key = env('WKEY');
     $curl = curl_init();
@@ -651,30 +642,16 @@ function create_world_order($country, $service, $price, $calculatrdcost){
         $ver->order_id = $var->order_id;
         $ver->country = $var->country;
         $ver->service = $var->service;
-        $ver->expires_in = $var->expires_in / 10 - 20;
-        $ver->cost = $calculatrdcost;
-        $ver->created_at = $formattedTime;
-        $ver->expires_in = 300;
+        $ver->cost = $price;
         $ver->api_cost = $var->cost;
         $ver->status = 1;
         $ver->type = 2;
 
         $ver->save();
 
-
-        User::where('id', Auth::id())->decrement('wallet', $calculatrdcost);
-
-
-
-        $cost2 = number_format($calculatrdcost, 2);
-        $cal = Auth::user()->wallet - $calculatrdcost;
-        $bal = number_format($cal, 2);
-        $message = Auth::user()->email." just been ordered number on  SMSPOOL NGN $cost2 | NGN $bal ";
-        send_notification($message);
-        send_notification2($message);
+        User::where('id', Auth::id())->decrement('wallet', $price);
 
         return 3;
-
 
 
     }
@@ -813,10 +790,48 @@ function check_world_sms($orderID){
 }
 
 
+function get_title($service, $country)
+{
+
+    $key = env('WKEY');
+    $databody = array(
+        "country" => $country,
+        "service" => $service,
+        "web" => '1',
+    );
+
+    $body = json_encode($databody);
+
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.smspool.net/pool/retrieve_valid',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $databody,
+        CURLOPT_HTTPHEADER => array(
+            "Authorization: Bearer $key"
+        ),
+    ));
+
+    $var = curl_exec($curl);
+    curl_close($curl);
+    $var = json_decode($var);
+
+    dd($var);
+
+
+
+}
+
+
 function pool_cost($service, $country){
 
     $key = env('WKEY');
-
     $databody = array(
         "key" => $key,
         "country" => $country,
@@ -846,10 +861,13 @@ function pool_cost($service, $country){
     curl_close($curl);
     $var = json_decode($var);
 
-
     $get_s_price = $var->price ?? null;
     $high_price = $var->high_price ?? null;
     $rate = $var->success_rate ?? null;
+
+    if($rate == null ){
+        return 0;
+    }
 
     if($get_s_price < 4){
         $price = $get_s_price * 1.3;
@@ -857,8 +875,10 @@ function pool_cost($service, $country){
         $price = $get_s_price;
     }
 
+    $data['cost']  = $price;
+    $data['success_rate']  = $rate;
 
-    return $price;
+    return $data;
 
 
 }
