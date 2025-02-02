@@ -57,6 +57,14 @@ class LoginController extends Controller
             }
 
             $transactions = Transaction::latest()->where('user_id', Auth::id())->take('10')->get()->makeHidden('updated_at');
+
+            $device_id = User::where('id', Auth::id())->first()->device_id ?? null;
+            if($device_id == null){
+                User::where('id', Auth::id())->update(['device_id' => $request->device_id]);
+            }
+
+
+
             $data['quick_services'] = $filteredData;
             $data['transactions'] = $transactions;
 

@@ -70,8 +70,6 @@ class WorldServiceController extends Controller
     public function order_world_service(Request $request)
     {
 
-
-
         $get_rate = Setting::where('id', 1)->first()->rate;
         $margin = Setting::where('id', 1)->first()->margin;
         $gcost = pool_cost($request->service, $request->service);
