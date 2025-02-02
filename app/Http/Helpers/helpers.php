@@ -91,7 +91,7 @@ function sendNotificationToHttp(array|null $data): bool|string|null
 }
 
 
-function sendDeviceNotification($device_id, $message)
+function sendDeviceNotification($device_id, $message, $title)
 {
 
 
@@ -99,12 +99,13 @@ function sendDeviceNotification($device_id, $message)
         'message' => [
             'token' => $device_id,
             'data' => [
+
                 "message" => "$message",
                 "sound" => "notification.wav",
                 "android_channel_id" => "hexa-ride"
             ],
             'notification' => [
-                "title" => "Incoming Transfer",
+                "title" => $title,
                 "body" => $message,
             ]
         ]

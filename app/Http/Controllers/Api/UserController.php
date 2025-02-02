@@ -136,14 +136,14 @@ class UserController extends Controller
         send_notification($message);
 
 
-        if($request->ip() != "35.162.80.204"){
-            $message = "Wrong IP request | ===>>>".$request->ip();
-            send_notification($message);
-            return response()->json([
-                'status' => false,
-                'message' => "Wrong IP request"
-            ]);
-        }
+//        if($request->ip() != "35.162.80.204"){
+//            $message = "Wrong IP request | ===>>>".$request->ip();
+//            send_notification($message);
+//            return response()->json([
+//                'status' => false,
+//                'message' => "Wrong IP request"
+//            ]);
+//        }
 
         $acc_no = $request->nuban;
         $user_amount = $request->amount;
@@ -194,12 +194,14 @@ class UserController extends Controller
 
             $user = User::where('id', $user_id)->first();
             $message = "$ramount has been funded to your main wallet";
-            sendDeviceNotification($user->device_id, $message );
-            $email = $user->email;
-            $amount = $ramount;
-            $username = $user->username;
-            $subject = "Wallet Funding";
-            sendcreditmail($email,$amount,$username,$subject);
+            $title = "Incoming Transfer";
+            sendDeviceNotification($user->device_id, $message, $title );
+//            $email = $user->email;
+//            $amount = $ramount;
+//            $username = $user->username;
+//            $subject = "Wallet Funding";
+
+           // sendcreditmail($email,$amount,$username,$subject);
 
         }
 

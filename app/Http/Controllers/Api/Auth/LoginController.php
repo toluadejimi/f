@@ -61,7 +61,11 @@ class LoginController extends Controller
             $device_id = User::where('id', Auth::id())->first()->device_id ?? null;
             if($device_id == null){
                 User::where('id', Auth::id())->update(['device_id' => $request->device_id]);
+            }elseif($device_id != $request->device_id){
+                User::where('id', Auth::id())->update(['device_id' => $request->device_id]);
             }
+
+
 
 
 
