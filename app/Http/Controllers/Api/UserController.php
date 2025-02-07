@@ -120,12 +120,7 @@ class UserController extends Controller
     }
 
 
-    public function logout()
-    {
-        $user = Auth::user();
-        $user->token()->revoke();
-        return response()->json(['message' => 'Successfully logged out']);
-    }
+
 
 
 
@@ -208,10 +203,75 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => "Transaction Successful",
-            ]);
+            ], 200);
 
     }
 
+
+    public function change_password(request $request)
+    {
+
+        if($request->password != $request->password_confirmation){
+            return response()->json([
+                'status' => false,
+                'message' => "Password Mismatch",
+            ], 422);
+
+        }
+
+        $pass = bcrypt($request->password);
+        User::where('id', Auth::id())->update(['password' => $pass]);
+
+        return response()->json([
+            'status' => true,
+            'message' => "Password successfully changed",
+        ], 200);
+
+    }
+
+
+    public function all_transactions(request $request)
+    {
+
+      $transactions =   Transaction::where('user_id', Auth::id())->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $transactions,
+        ], 200);
+
+
+    }
+
+
+
+    public function support(request $request)
+    {
+
+        $url = [
+
+            'telegram' => 'https://telegram.com',
+            'whatsapp' => 'https://whatsapp.com'
+
+        ];
+        return response()->json([
+            'status' => true,
+            'data' => $url,
+        ], 200);
+
+
+    }
+
+
+    public function logout()
+    {
+        $user = Auth::user();
+        $user->token()->revoke();
+        return response()->json([
+            'status' => true,
+            'message' => 'Successfully logged out'
+        ], 200);
+    }
 
 
 }

@@ -49,6 +49,14 @@ Route::group(['middleware' => ['auth:api', 'Acess']], function () {
     Route::post('order-world-service',  [WorldServiceController::class,'order_world_service']);
 
 
+    Route::post('change-password',  [UserController::class,'change_password']);
+    Route::get('all-transactions',  [UserController::class,'all_transactions']);
+    Route::get('support',  [UserController::class,'support']);
+    Route::get('logout',  [UserController::class,'logout']);
+
+
+
+
 
 
 

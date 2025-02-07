@@ -99,14 +99,26 @@ function sendDeviceNotification($device_id, $message, $title)
         'message' => [
             'token' => $device_id,
             'data' => [
-
                 "message" => "$message",
                 "sound" => "notification.wav",
                 "android_channel_id" => "hexa-ride"
             ],
             'notification' => [
                 "title" => $title,
-                "body" => $message,
+                "body" => $message
+            ],
+            'android' => [
+                'priority' => 'high'
+            ],
+            'apns' => [
+                'headers' => [
+                    'apns-priority' => '10'
+                ],
+                'payload' => [
+                    'aps' => [
+                        'content-available' => 1
+                    ]
+                ]
             ]
         ]
     ];
